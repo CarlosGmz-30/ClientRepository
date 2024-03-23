@@ -5,40 +5,39 @@ import {
   Select,
   TextInput,
   Datepicker,
-  FileInput
+  FileInput,
 } from "flowbite-react";
 import { useFormik } from "formik";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 import * as yup from "yup";
 import { confirmAlert, customAlert } from "../../../../config/alerts/alert";
 import AxiosClient from "../../../../config/http-client/axios-client";
 
 
-const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
-  const [users, setUsers] = useState([]);
-
+const UpdateUserForm = ({
+  isEditing,
+  setIsEditing,
+  getAllUsers,
+  selectedUser,
+}) => {
   const closeModal = () => {
+    formik.resetForm();
     setIsEditing(false);
   };
 
-  const idPerson = id;
-
-
-
-
   const handleChangeAvatar = (event) => {
+    //files, files[0]
     console.log(files);
     const files = event.target.files;
     for (const file of files) {
       const reader = new FileReader();
       reader.onloadend = (data) => {
-
-        formik.setFieldTouched('avatar', true);
-        formik.setFieldValue('avatar', data.result)
-      }
+        formik.setFieldTouched("avatar", true);
+        formik.setFieldValue("avatar", data.result);
+      };
       reader.readAsDataURL(file);
     }
-  }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -100,6 +99,7 @@ const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
     onSubmit: async (values, { setSubmitting }) => {
       confirmAlert(async () => {
         try {
+          console.log(values);
           const payload = {
             ...values,
             birthDate: values.birth_date,
@@ -107,51 +107,65 @@ const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
               username: values.username,
               avatar: values.avatar,
               password: values.password,
-              roles: [{ id: values.roles }]
-            }
-          }
+              roles: [{ id: values.roles }],
+            },
+          };
           const response = await AxiosClient({
-            method: "POST",
-            url: '/person/',
-            data: payload
-          })
+            method: "PUT",
+            url: "/person/",
+            data: payload,
+          });
           if (!response.error) {
-            customAlert('Registro exitoso', 'El usuario se ha registrado correctamente', 'success')
+            console.log(response);
+            customAlert(
+              "Actualización exitosa",
+              "El usuario se ha actualizado correctamente",
+              "success"
+            );
             getAllUsers();
             closeModal();
           }
         } catch (error) {
-          customAlert('Ocurrio un error', 'Error al registrar al usuario', 'error');
-          console.log(error)
+          customAlert(
+            "Ocurrio un error",
+            "Error al actualizar al usuario",
+            "error"
+          );
+          console.log(error);
         } finally {
           setSubmitting(false);
         }
-      })
+      });
     },
   });
 
-  const getUser = async (idPerson) => {
-    try {
-      const response = await AxiosClient({ url: `/person/${idPerson}`, method: 'GET' });
-      console.log(response);
-      if (!response.error) setUsers(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   useEffect(() => {
-    getUser(idPerson);
-    console.log(users);
-  }, []);
+    if (selectedUser) {
+      formik.setValues({
+        username: selectedUser.username || "",
+        roles: selectedUser.roles || "",
+        name: selectedUser.person.name || "",
+        surname: selectedUser.person.surname || "",
+        lastname: selectedUser.person.lastname || "",
+        curp: selectedUser.person.curp || "",
+        birthDate: selectedUser.person.birthDate || "",
+        avatar: selectedUser.person.avatar || null,
+      });
+    }
+  }, [selectedUser]);
 
   return (
-    < Modal onClose={() => closeModal()} show={isEditing} size={"4xl"} >
+    <Modal onClose={() => closeModal()} show={isEditing} size={"4xl"}>
       <Modal.Header>
         <h3 className="font-bold">Actualizar usuario</h3>
       </Modal.Header>
       <Modal.Body>
-        <form id="userForm" name="userForm" noValidate onSubmit={formik.handleSubmit}>
+        <form
+          id="userForm"
+          name="userForm"
+          noValidate
+          onSubmit={formik.handleSubmit}
+        >
           <div className="flex flex-col gap-2">
             <h3 className="font-bold text-2xl">Datos de usuario</h3>
             <div className="grid grid-flow-col gap-2 mt-4">
@@ -197,7 +211,7 @@ const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
                     )
                   }
                 >
-                  <option value="1" >ADMIN</option>
+                  <option value="1">ADMIN</option>
                   <option value="2">USER</option>
                   <option value="3">CLIENT</option>
                 </Select>
@@ -256,7 +270,12 @@ const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
             <div className="grid grid-flow-col gap-2 mb-4">
               <div className="grid-col-5">
                 <Label htmlFor="avatar" className="font-bold" value="Avatar" />
-                <FileInput type="file" id="avatar" name="avatar" onChange={(e) => handleChangeAvatar(e)} />
+                <FileInput
+                  type="file"
+                  id="avatar"
+                  name="avatar"
+                  onChange={(e) => handleChangeAvatar(e)}
+                />
               </div>
             </div>
             <h3 className="font-bold text-2xl">Datos personales</h3>
@@ -280,7 +299,11 @@ const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
                 />
               </div>
               <div className="grid-col-4">
-                <Label htmlFor="surname" className="font-bold" value="Apellido paterno" />
+                <Label
+                  htmlFor="surname"
+                  className="font-bold"
+                  value="Apellido paterno"
+                />
                 <TextInput
                   type="text"
                   placeholder="Martínez"
@@ -292,7 +315,9 @@ const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
                   helperText={
                     formik.touched.surname &&
                     formik.errors.surname && (
-                      <span classname="text-red-600">{formik.errors.surname}</span>
+                      <span classname="text-red-600">
+                        {formik.errors.surname}
+                      </span>
                     )
                   }
                 />
@@ -314,7 +339,9 @@ const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
                   helperText={
                     formik.touched.lastname &&
                     formik.errors.lastname && (
-                      <span classname="text-red-600">{formik.errors.lastname}</span>
+                      <span classname="text-red-600">
+                        {formik.errors.lastname}
+                      </span>
                     )
                   }
                 />
@@ -325,7 +352,7 @@ const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
                 <Label htmlFor="curp" className="font-bold" value="CURP" />
                 <TextInput
                   type="curp"
-                  placeholder="MGCH200504HDFRRR02"
+                  placeholder="MGCJ200504HDFRRL00"
                   id="curp"
                   name="curp"
                   value={formik.values.curp}
@@ -355,8 +382,11 @@ const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
                   helperText={
                     formik.touched.birth_date &&
                     formik.errors.birth_date && (
-                      <span classname="text-red-600">{formik.errors.birth_date}</span>
-                    )}
+                      <span classname="text-red-600">
+                        {formik.errors.birth_date}
+                      </span>
+                    )
+                  }
                 />
               </div>
             </div>
@@ -364,10 +394,18 @@ const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers, id }) => {
         </form>
       </Modal.Body>
       <Modal.Footer className="flex justify-end gap-2">
-        <Button onClick={closeModal} color="gray">CANCELAR</Button>
-        <Button type="submit" form="userForm" color="success" disabled={formik.isSubmitting || !formik.isValid}>GUARDAR</Button>
+        <Button onClick={closeModal} color="gray">
+          CANCELAR
+        </Button>
+        <Button
+          type="submit"
+          form="userForm"
+          color="success"
+        >
+          GUARDAR
+        </Button>
       </Modal.Footer>
-    </ Modal>
+    </Modal>
   );
 };
 

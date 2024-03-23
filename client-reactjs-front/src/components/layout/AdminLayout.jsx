@@ -19,7 +19,7 @@ const AdminLayout = () => {
               inline
             >
               <Dropdown.Header>
-                <span className="block text-sm">Carlos Martinez</span>
+                <span className="block text-sm">Carlos Martínez</span>
                 <span className="block truncate text-sm font-medium">carlos.mtzg2004@gmail.com</span>
               </Dropdown.Header>
               <Dropdown.Item>Dashboard</Dropdown.Item>

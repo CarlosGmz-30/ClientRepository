@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, {useContext} from 'react'
 import { Button, TextInput, Label, Checkbox, Spinner } from 'flowbite-react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -9,7 +9,9 @@ import AuthContext from '../../config/context/auth-context'
 
 
 const SignInPage = () => {
-    const { dispatch } = useContext(AuthContext);
+    //Formik nos ayuda a controlar los formularios 
+
+    const { dispatch} = useContext(AuthContext);
     const navigate = useNavigate();
 
     const formik = useFormik({
@@ -28,17 +30,17 @@ const SignInPage = () => {
                     method: "POST",
                     data: values
                 });
-                if (!response.error) {
+                if(!response.error){
                     /**
                      * Tenemos que validar que rol tiene -> Redireccionarlo a su página principal
                      */
-                    dispatch({ type: "SIGNIN", payload: response.data });     //Es el metodo que utiliza nuestro contexto para indicar si un usuario inicio sesión y con que metodo inicio sesión
-                    navigate("/", { replace: true });
+                    dispatch({type: "SIGNIN", payload: response.data});     //Es el metodo que utiliza nuestro contexto para indicar si un usuario inicio sesión y con que metodo inicio sesión
+                    navigate("/", {replace: true});
                 } else throw Error("Error");
             } catch (error) {
                 customAlert("Iniciar sesión",
-                    "Usuario y/o contraseña incorrectos",
-                    'info'
+                "Usuario y/o contraseña incorrectos",
+                'info'
                 );
             } finally {
                 setSubmitting(false);

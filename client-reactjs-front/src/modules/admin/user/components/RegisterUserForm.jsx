@@ -16,6 +16,7 @@ import AxiosClient from "../../../../config/http-client/axios-client";
 
 const RegisterUserForm = ({ isCreating, setIsCreating, getAllUsers }) => {
   const closeModal = () => {
+    formik.resetForm();
     setIsCreating(false);
   };
 
@@ -176,7 +177,7 @@ const RegisterUserForm = ({ isCreating, setIsCreating, getAllUsers }) => {
                     )
                   }
                 >
-                  <option value="1">ADMIN</option>
+                  <option value="1" >ADMIN</option>
                   <option value="2">USER</option>
                   <option value="3">CLIENT</option>
                 </Select>
@@ -262,7 +263,7 @@ const RegisterUserForm = ({ isCreating, setIsCreating, getAllUsers }) => {
                 <Label htmlFor="surname" className="font-bold" value="Apellido paterno" />
                 <TextInput
                   type="text"
-                  placeholder="Martinez"
+                  placeholder="Martínez"
                   id="surname"
                   name="surname"
                   value={formik.values.surname}
@@ -284,7 +285,7 @@ const RegisterUserForm = ({ isCreating, setIsCreating, getAllUsers }) => {
                 />
                 <TextInput
                   type="text"
-                  placeholder="Gomez"
+                  placeholder="Gómez"
                   id="lastname"
                   name="lastname"
                   value={formik.values.lastname}
@@ -304,7 +305,7 @@ const RegisterUserForm = ({ isCreating, setIsCreating, getAllUsers }) => {
                 <Label htmlFor="curp" className="font-bold" value="CURP" />
                 <TextInput
                   type="curp"
-                  placeholder="MGCH200504HDFRRR02"
+                  placeholder="MAGC200504HDFRRL00"
                   id="curp"
                   name="curp"
                   value={formik.values.curp}
